@@ -136,6 +136,7 @@
   }
   .entry-go.draft { background: #EA580C; }
   .entry-go.done { background: #16A34A; }
+  .entry-go.new { background: #2563EB; }
   .entry-link {
     display: block;
     width: 100%;
@@ -162,6 +163,7 @@
   .fair-st.on { display: block; }
   .fair-st.draft { color: #C2410C; }
   .fair-st.done { color: #15803D; }
+  .fair-st.new { color: #1D4ED8; }
   .entry.inner {
     background: linear-gradient(135deg, #2B0A18 0%, #5C1238 55%, #8B1A4A 100%);
     color: #fff;
@@ -617,7 +619,7 @@
         <em>留学生秋招专属通道</em>
         <strong>中国海归艺术创意人才专场招聘会</strong>
       </span>
-      <button class="entry-go" id="fairGo" type="button">立即投递</button>
+      <button class="entry-go" id="fairGo" type="button">立即报名</button>
     </span>
     <div class="entry-dates">
       <span><em>上海</em><b>10/24</b></span>
@@ -788,7 +790,7 @@ function paintFair() {
   }
   const go = document.getElementById("fairGo");
   const line = document.getElementById("fairSt");
-  go.classList.remove("draft", "done");
+  go.classList.remove("draft", "done", "new");
   if (st === "done") {
     go.textContent = "查看报名";
     go.classList.add("done");
@@ -800,9 +802,10 @@ function paintFair() {
     line.textContent = "未填写完，点右上角继续完善";
     line.className = "fair-st on draft";
   } else {
-    go.textContent = "立即投递";
-    line.textContent = "";
-    line.className = "fair-st";
+    go.textContent = "立即报名";
+    go.classList.add("new");
+    line.textContent = "还未报名，点右上角立即报名";
+    line.className = "fair-st on new";
   }
 }
 
