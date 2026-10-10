@@ -783,6 +783,9 @@ function goFair() {
   location.href = "job-apply.html?pub=1&city=" + encodeURIComponent(name);
 }
 function paintFair() {
+  if (new URLSearchParams(location.search).get("reset") === "1") {
+    try { localStorage.removeItem("sfk-fair-apply"); } catch (e) {}
+  }
   const q = new URLSearchParams(location.search).get("apply");
   let st = q === "done" || q === "draft" ? q : "";
   if (!st) {
