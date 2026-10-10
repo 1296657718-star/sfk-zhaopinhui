@@ -2188,6 +2188,7 @@
     letter-spacing: 1px;
     transform: rotate(-12deg);
     background: rgba(255,255,255,.12);
+    color: #fff;
   }
   .ticket-cut {
     height: 14px;
@@ -2578,6 +2579,24 @@
     letter-spacing: 0;
     line-height: 1.2;
     text-align: center;
+  }
+  .ticket-stamp.st-done,
+  .tk-stamp.st-done {
+    border-color: #FFD34D;
+    color: #FFD34D;
+    background: rgba(255, 211, 77, .16);
+  }
+  .ticket-stamp.st-in,
+  .tk-stamp.st-in {
+    border-color: #7CF2C8;
+    color: #7CF2C8;
+    background: rgba(124, 242, 200, .16);
+  }
+  .ticket-stamp.st-cancel,
+  .tk-stamp.st-cancel {
+    border-color: #FFB3C0;
+    color: #FFB3C0;
+    background: rgba(255, 179, 192, .16);
   }
   .book-pack .ticket-cut {
     background-color: #fff;
@@ -4524,7 +4543,7 @@ function paintBook() {
   const addrHtml = addrEl ? addrEl.innerHTML : venue.html;
   const saved = fairGet();
   const status = saved.status;
-  const stamp = saved.cancelled ? "已取消预约" : (saved.checkIn ? "已签到" : (status === "done" ? "已提交" : "已预约"));
+  const stamp = saved.cancelled ? "已取消" : (saved.checkIn ? "已签到" : (status === "done" ? "已提交" : "已预约"));
   const title = INNER ? INNER_NAME : "中国海归艺术创意人才专场招聘会";
   const phoneDigits = ((document.getElementById("phone") || {}).value || "").replace(/\s/g, "");
   const phoneMask = phoneDigits.length >= 7
@@ -4539,7 +4558,7 @@ function paintBook() {
     sec(cls, title) + rows.filter(Boolean).map(r => line(r[0], r[1])).join("");
   box.innerHTML =
     "<div class=\"book-pack\" id=\"bookTicket\" data-addr=\"" + venue.nav + "\">" +
-      "<div class=\"ticket-stamp" + (stamp.length > 3 ? " long" : "") + "\">" + stamp + "</div>" +
+      "<div class=\"ticket-stamp" + stampCls(stamp) + "\">" + stamp + "</div>" +
       "<div class=\"ticket-top\">" +
         "<div class=\"k\">预约信息票据</div>" +
         "<h3>" + title + "</h3>" +
@@ -4880,10 +4899,13 @@ function patchFair(extra) {
   const data = Object.assign({}, fairGet(), extra, { at: Date.now() });
   localStorage.setItem("sfk-fair-apply", JSON.stringify(data));
 }
-/* 印章状态：已取消 > 已签到 > 已提交 > 已预约 */
+/* 印章状态与配色：已预约=白 / 已提交=金 / 已签到=薄荷绿 / 已取消=浅红 */
 function bookStamp() {
   const saved = fairGet();
-  return saved.cancelled ? "已取消预约" : (saved.checkIn ? "已签到" : (saved.status === "done" ? "已提交" : "已预约"));
+  return saved.cancelled ? "已取消" : (saved.checkIn ? "已签到" : (saved.status === "done" ? "已提交" : "已预约"));
+}
+function stampCls(text) {
+  return text === "已提交" ? " st-done" : text === "已签到" ? " st-in" : text === "已取消" ? " st-cancel" : "";
 }
 /* 把预约信息渲染成可保存的图片内容（预览层里的白卡片） */
 function paintTicketImage() {
@@ -4911,7 +4933,7 @@ function paintTicketImage() {
     "<div class=\"tk-head\">" +
       "<div class=\"k\">预约信息票据</div>" +
       "<h3>" + title + "</h3>" +
-      "<div class=\"tk-stamp" + (bookStamp().length > 3 ? " long" : "") + "\">" + bookStamp() + "</div>" +
+      "<div class=\"tk-stamp" + stampCls(bookStamp()) + "\">" + bookStamp() + "</div>" +
     "</div>" +
     "<table class=\"tk-tb\">" +
       "<tr class=\"tk-sec meet\"><td colspan=\"2\">场次预约</td></tr>" +
@@ -4927,8 +4949,7 @@ function paintTicketImage() {
       (INNER ? line("所在校区", txt("campus")) : "") +
       (INNER ? line("斯芬克校友", txt("alumni")) : "") +
     "</table>" +
-    "<div class=\"tk-cut\"></div>" +
-    "<div class=\"tk-foot\">斯芬克国际艺术教育 · 中国海归艺术创意人才专场招聘会<br>本票据为预约凭证，到场请出示</div>";
+    "<div class=\"tk-cut\"></div>";
 }
 /* 点击「下载门票」：生成图片内容并弹出预览层（非直接下载文件） */
 function downloadTicket() {
