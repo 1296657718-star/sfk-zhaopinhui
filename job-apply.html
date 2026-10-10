@@ -2572,6 +2572,13 @@
     top: 14px;
     right: 10px;
   }
+  .ticket-stamp.long,
+  .tk-stamp.long {
+    font-size: 9px;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-align: center;
+  }
   .book-pack .ticket-cut {
     background-color: #fff;
     background-image:
@@ -2912,6 +2919,7 @@
     cursor: pointer;
   }
   .share-panel button + button { border-top: 1px solid #F0F0F0; }
+  .share-panel button[hidden] { display: none !important; }
   .share-panel button.dim {
     color: #999;
     font-weight: 600;
@@ -3075,6 +3083,119 @@
   body.pub-ch .qr-logo { color: #4F46E5; }
   body.inner-ch .poster-qr { border-color: #F3E8EE; }
   body.pub-ch .poster-qr { border-color: #E8EAF4; }
+
+  /* ===== 门票图片预览层（原型新增）===== */
+  #ticketModal {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    z-index: 64;
+  }
+  #ticketModal.on { display: flex; }
+  .ticket-mask { position: absolute; inset: 0; background: rgba(20, 12, 18, .52); }
+  .ticket-body {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ticket-img {
+    background: #fff;
+    border-radius: 14px;
+    overflow-y: auto;
+  }
+  .tk-head {
+    position: relative;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+    color: #fff;
+  }
+  .tk-head .k { font-size: 11px; font-weight: 800; letter-spacing: 2px; opacity: .9; }
+  .tk-head h3 {
+    margin: 5px 0 0;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.3;
+    padding-right: 56px;
+  }
+  .tk-stamp {
+    position: absolute;
+    top: 13px;
+    right: 12px;
+    width: 50px;
+    height: 50px;
+    border: 2px solid rgba(255,255,255,.95);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transform: rotate(-12deg);
+    background: rgba(255,255,255,.12);
+  }
+  .tk-tb { width: 100%; border-collapse: collapse; }
+  .tk-tb th,
+  .tk-tb td {
+    padding: 9px 14px;
+    font-size: 12px;
+    vertical-align: top;
+    border-bottom: 1px solid #F4F4F4;
+  }
+  .tk-tb tr:last-child th,
+  .tk-tb tr:last-child td { border-bottom: 0; }
+  .tk-tb th { width: 76px; font-weight: 700; color: #999; text-align: left; }
+  .tk-tb td { font-weight: 800; color: #222; text-align: left; line-height: 1.45; word-break: break-word; }
+  .tk-sec td { padding: 12px 14px 5px; font-size: 12px; font-weight: 800; border-bottom: 0; }
+  .tk-sec.meet td { color: #4F46E5; }
+  .tk-sec.info td { color: #0369A1; }
+  .tk-tip td { padding: 4px 14px 12px; font-size: 12px; font-weight: 700; color: #555; line-height: 1.5; border-bottom: 0; }
+  .tk-tip em { font-style: normal; color: #4F46E5; font-weight: 800; }
+  .tk-cut {
+    height: 12px;
+    background-color: #fff;
+    background-image:
+      radial-gradient(circle at 0 50%, #F6F6F6 6px, transparent 7px),
+      radial-gradient(circle at 100% 50%, #F6F6F6 6px, transparent 7px),
+      repeating-linear-gradient(90deg, #E5E5E5 0 6px, transparent 6px 12px);
+    background-repeat: no-repeat, no-repeat, repeat-x;
+    background-position: left center, right center, center;
+  }
+  .tk-foot {
+    padding: 11px 16px 14px;
+    text-align: center;
+    font-size: 10px;
+    color: #AAA;
+    line-height: 1.6;
+    background: #fff;
+  }
+  .tk-acts { display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: 8px; }
+  .tk-acts button {
+    height: 44px;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+    border: 0;
+  }
+  .tk-acts button.ghost { background: rgba(255,255,255,.92); }
+  .tk-acts button.pri { background: #4F46E5; color: #fff; }
+  .tk-acts button.line { background: #fff; color: #4F46E5; border: 1px solid #4F46E5; }
+  .tk-note { text-align: center; font-size: 11px; color: rgba(255,255,255,.78); }
+  body.inner-ch .tk-head { background: linear-gradient(135deg, #E21876 0%, #EC4899 100%); }
+  body.inner-ch .tk-sec.meet td,
+  body.inner-ch .tk-tip em { color: #C2186A; }
+  body.inner-ch .tk-acts button.pri { background: #E21876; }
+  body.inner-ch .tk-acts button.line { color: #E21876; border-color: #E21876; }
 </style>
 </head>
 <body>
@@ -3769,6 +3890,18 @@
       <button class="poster-cancel" id="posterClose" type="button">关闭</button>
     </div>
   </div>
+  <div id="ticketModal">
+    <div class="ticket-mask" id="ticketMask"></div>
+    <div class="ticket-body">
+      <div class="ticket-img" id="ticketImg"></div>
+      <div class="tk-acts">
+        <button type="button" class="ghost" id="tkCancel">取消</button>
+        <button type="button" class="pri" id="tkSave">保存到相册</button>
+        <button type="button" class="line" id="tkShare">分享</button>
+      </div>
+      <p class="tk-note">真实微信环境也可长按图片保存</p>
+    </div>
+  </div>
   <div class="side-fabs on" id="sideFabs">
     <button class="side-fab share" id="shareBtn" type="button" aria-label="分享">
       <span class="ico" aria-hidden="true">
@@ -4391,7 +4524,7 @@ function paintBook() {
   const addrHtml = addrEl ? addrEl.innerHTML : venue.html;
   const saved = fairGet();
   const status = saved.status;
-  const stamp = saved.cancelled ? "已取消" : (saved.checkIn ? "已签到" : (status === "done" ? "已提交" : "已预约"));
+  const stamp = saved.cancelled ? "已取消预约" : (saved.checkIn ? "已签到" : (status === "done" ? "已提交" : "已预约"));
   const title = INNER ? INNER_NAME : "中国海归艺术创意人才专场招聘会";
   const phoneDigits = ((document.getElementById("phone") || {}).value || "").replace(/\s/g, "");
   const phoneMask = phoneDigits.length >= 7
@@ -4406,7 +4539,7 @@ function paintBook() {
     sec(cls, title) + rows.filter(Boolean).map(r => line(r[0], r[1])).join("");
   box.innerHTML =
     "<div class=\"book-pack\" id=\"bookTicket\" data-addr=\"" + venue.nav + "\">" +
-      "<div class=\"ticket-stamp\">" + stamp + "</div>" +
+      "<div class=\"ticket-stamp" + (stamp.length > 3 ? " long" : "") + "\">" + stamp + "</div>" +
       "<div class=\"ticket-top\">" +
         "<div class=\"k\">预约信息票据</div>" +
         "<h3>" + title + "</h3>" +
@@ -4747,15 +4880,63 @@ function patchFair(extra) {
   const data = Object.assign({}, fairGet(), extra, { at: Date.now() });
   localStorage.setItem("sfk-fair-apply", JSON.stringify(data));
 }
+/* 印章状态：已取消 > 已签到 > 已提交 > 已预约 */
+function bookStamp() {
+  const saved = fairGet();
+  return saved.cancelled ? "已取消预约" : (saved.checkIn ? "已签到" : (saved.status === "done" ? "已提交" : "已预约"));
+}
+/* 把预约信息渲染成可保存的图片内容（预览层里的白卡片） */
+function paintTicketImage() {
+  const box = document.getElementById("ticketImg");
+  if (!box) return;
+  const txt = id => {
+    const el = document.getElementById(id);
+    return el && String(el.value || "").trim() ? el.value.trim() : "未填";
+  };
+  const fair = document.querySelector("#fairCity .chip.on");
+  const cityName = fair ? fair.dataset.city + "站" : "未选站";
+  const date = fair
+    ? (fair.dataset.date || "").replace(/^0?(\d+)\/0?(\d+)$/, "$1月$2日") + "上午"
+    : "未选时间";
+  const venue = VENUES[(fair && fair.dataset.city) || "北京"] || VENUES["北京"];
+  const addrEl = document.getElementById("passAddr");
+  const addr = addrEl && addrEl.textContent.trim() ? addrEl.textContent.trim() : venue.nav;
+  const phoneDigits = ((document.getElementById("phone") || {}).value || "").replace(/\s/g, "");
+  const phoneMask = phoneDigits.length >= 7
+    ? phoneDigits.slice(0, 3) + "****" + phoneDigits.slice(-4)
+    : (phoneDigits || "未填");
+  const title = INNER ? INNER_NAME : "中国海归艺术创意人才专场招聘会";
+  const line = (k, v) => "<tr><th>" + k + "</th><td>" + v + "</td></tr>";
+  box.innerHTML =
+    "<div class=\"tk-head\">" +
+      "<div class=\"k\">预约信息票据</div>" +
+      "<h3>" + title + "</h3>" +
+      "<div class=\"tk-stamp" + (bookStamp().length > 3 ? " long" : "") + "\">" + bookStamp() + "</div>" +
+    "</div>" +
+    "<table class=\"tk-tb\">" +
+      "<tr class=\"tk-sec meet\"><td colspan=\"2\">场次预约</td></tr>" +
+      line("学生姓名", txt("name")) +
+      line("参展城市", cityName) +
+      line("到场时间", date) +
+      line("展会地址", addr) +
+      "<tr class=\"tk-tip\"><td colspan=\"2\">请<em>得体着装</em>到场，并准备足量纸质简历（<em>建议至少 10–15 份</em>）</td></tr>" +
+      "<tr class=\"tk-sec info\"><td colspan=\"2\">基本信息</td></tr>" +
+      line("手机号码", phoneMask) +
+      line("邮箱", txt("email")) +
+      (INNER ? line("教务老师", txt("teacher")) : "") +
+      (INNER ? line("所在校区", txt("campus")) : "") +
+      (INNER ? line("斯芬克校友", txt("alumni")) : "") +
+    "</table>" +
+    "<div class=\"tk-cut\"></div>" +
+    "<div class=\"tk-foot\">斯芬克国际艺术教育 · 中国海归艺术创意人才专场招聘会<br>本票据为预约凭证，到场请出示</div>";
+}
+/* 点击「下载门票」：生成图片内容并弹出预览层（非直接下载文件） */
 function downloadTicket() {
-  const pack = document.getElementById("bookTicket");
-  const text = pack ? pack.innerText.replace(/\n{3,}/g, "\n\n") : "预约信息";
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
-  a.download = "专场招聘会-入场凭证.txt";
-  a.click();
-  URL.revokeObjectURL(a.href);
-  toast("门票已下载");
+  paintTicketImage();
+  document.getElementById("ticketModal").classList.add("on");
+}
+function closeTicketModal() {
+  document.getElementById("ticketModal").classList.remove("on");
 }
 function checkInBook() {
   const saved = fairGet();
@@ -4864,7 +5045,11 @@ function paintPoster() {
   document.getElementById("posterNav").dataset.addr = v.nav;
   paintQr();
 }
-function openShareSheet() { document.getElementById("shareSheet").classList.add("on"); }
+/* fromTicket：门票预览层进入时隐藏「生成图片分享」，避免图片分享套娃 */
+function openShareSheet(fromTicket) {
+  document.getElementById("shareToImg").hidden = !!fromTicket;
+  document.getElementById("shareSheet").classList.add("on");
+}
 function closeShareSheet() { document.getElementById("shareSheet").classList.remove("on"); }
 function openPoster() {
   closeShareSheet();
@@ -4897,6 +5082,20 @@ function scanToApply() {
   document.getElementById("posterDown").addEventListener("click", () => toast("原型示意：图片已保存到相册"));
   document.getElementById("posterNav").addEventListener("click", () => {
     openNav(document.getElementById("posterNav").dataset.addr || "");
+  });
+})();
+(function bindTicketModal() {
+  const modal = document.getElementById("ticketModal");
+  if (!modal) return;
+  document.getElementById("ticketMask").addEventListener("click", closeTicketModal);
+  document.getElementById("tkCancel").addEventListener("click", closeTicketModal);
+  document.getElementById("tkSave").addEventListener("click", () => {
+    closeTicketModal();
+    toast("原型示意：门票图片已保存到相册");
+  });
+  document.getElementById("tkShare").addEventListener("click", () => {
+    closeTicketModal();
+    openShareSheet(true);
   });
 })();
 </script>
