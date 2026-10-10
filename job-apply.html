@@ -4837,7 +4837,7 @@ document.getElementById("goApply").addEventListener("click", () => showFairView(
       moved = false;
     }
   }, true);
-  btn.addEventListener("click", openShareSheet);
+  btn.addEventListener("click", () => openShareSheet());
   if (book) book.addEventListener("click", () => {
     paintAnchor("book");
     paintBook();
